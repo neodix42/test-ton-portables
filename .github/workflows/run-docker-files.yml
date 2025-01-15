@@ -36,11 +36,13 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download artifacts and test utilities
+        working-directory: ${{ matrix.docker-file }}
         run: |
           chmod +x download.sh 
           ./download.sh
           pwd
           ls -lart
+          sleep 10
 
       - name: Build
         id: docker_build
@@ -56,4 +58,4 @@ jobs:
         run: docker images
 
       - name: Run
-        run: timeout 180 docker run -rm ${{ matrix.docker-file }} --privileged --cap-add=ALL
+        run: timeout 180 docker run ${{ matrix.docker-file }} --privileged --cap-add=ALL

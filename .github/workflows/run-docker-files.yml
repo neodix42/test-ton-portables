@@ -2,6 +2,10 @@ name: Test TON portable binaries
 
 on: [push,workflow_dispatch,workflow_call]
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
 jobs:
   build:
     strategy:

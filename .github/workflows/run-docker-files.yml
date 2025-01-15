@@ -36,7 +36,6 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download artifacts and test utilities
-        working-directory: ${{ matrix.docker-file }}
         run: |
           chmod +x download.sh 
           ./download.sh

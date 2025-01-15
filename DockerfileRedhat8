@@ -1,0 +1,14 @@
+FROM redhat/ubi8
+RUN yum install -y wget binutils unzip fuse fuse-devel java-17-openjdk-headless &&  dnf install -y redhat-lsb-core
+RUN mkdir app
+COPY --chmod=744 /entry.sh /app
+WORKDIR "/app"
+ENTRYPOINT ["/app/entry.sh"]
+
+# libs ok
+# binaries
+#                               dht-server: /lib64/libm.so.6: version `GLIBC_2.29' not found (required by dht-server)
+#2025-01-09T20:45:02.628133157Z dht-server: /lib64/libpthread.so.0: version `GLIBC_2.30' not found (required by dht-server)
+#2025-01-09T20:45:02.628140967Z dht-server: /lib64/libc.so.6: version `GLIBC_2.18' not found (required by dht-server)
+#2025-01-09T20:45:02.628144437Z dht-server: /lib64/libc.so.6: version `GLIBC_2.30' not found (required by dht-server)
+#2025-01-09T20:45:02.628164027Z dht-server: /lib64/libc.so.6: version `GLIBC_2.28' not found (required by dht-server)

@@ -1,0 +1,12 @@
+FROM centos:centos7
+
+RUN sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-* && \
+    sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
+RUN yum install -y wget binutils unzip fuse fuse-devel java-17-openjdk-headless centos-release-scl devtoolset-10
+
+RUN mkdir app
+COPY --chmod=744 /entry.sh /app
+WORKDIR "/app"
+ENTRYPOINT ["/app/entry.sh"]
+
+#dht-server: /lib64/libm.so.6: version `GLIBC_2.29' not found (required by dht-server)

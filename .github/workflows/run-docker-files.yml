@@ -42,7 +42,7 @@ jobs:
           platforms: linux/amd64
           load: true
           push: false
-          context: ./{{ matrix.docker-file }}
+          context: ./${{ matrix.docker-file }}
 
       - name: Download artifacts and test utilities
         run: ./download.sh
@@ -51,4 +51,4 @@ jobs:
         run: docker images
 
       - name: Run
-        run: timeout 180 docker run -rm {{ matrix.docker-file }} --privileged --cap-add=ALL
+        run: timeout 180 docker run -rm ${{ matrix.docker-file }} --privileged --cap-add=ALL

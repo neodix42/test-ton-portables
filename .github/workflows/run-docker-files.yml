@@ -7,21 +7,7 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  prepare:
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Download artifacts and test utilities
-        run: |
-          wget --no-check-certificate -qnc https://github.com/neodix42/test-ton-libs/releases/latest/download/test-ton-libs.jar
-          echo downloaded test-ton-libs          
-          wget --no-check-certificate -qnc https://github.com/neodix42/MyLocalTon/releases/download/v124/MyLocalTon-x86-64-dev.jar
-          echo downloaded MyLocalTon          
-          wget --no-check-certificate -qnc https://github.com/neodix42/ton/releases/latest/download/ton-linux-x86_64.zip
-          echo downloaded ton-appimages
-          ls -larth
-
   build:
-    needs: prepare
     strategy:
       fail-fast: false
       matrix:
@@ -48,6 +34,23 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download artifacts and test utilities
+        if: matrix.docker-file == 'dockerfile-ubuntu-20'
+        run: |
+          wget --no-check-certificate -qnc https://github.com/neodix42/test-ton-libs/releases/latest/download/test-ton-libs.jar
+          echo downloaded test-ton-libs          
+          wget --no-check-certificate -qnc https://github.com/neodix42/MyLocalTon/releases/download/v124/MyLocalTon-x86-64-dev.jar
+          echo downloaded MyLocalTon          
+          wget --no-check-certificate -qnc https://github.com/neodix42/ton/releases/latest/download/ton-linux-x86_64.zip
+          echo downloaded ton-appimages
+          ls -larth
+
+      - name: Other wait for download to finish
+        if: matrix.docker-file != 'dockerfile-ubuntu-20'
+        run: |
+          sleep 30
+          ls -larth
 
       - name: Build
         id: docker_build

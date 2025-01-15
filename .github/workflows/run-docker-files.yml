@@ -35,6 +35,12 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Download artifacts and test utilities
+        run: |
+          ./download.sh
+          pwd
+          ls -lart
+
       - name: Build
         id: docker_build
         uses: docker/build-push-action@v6
@@ -43,9 +49,6 @@ jobs:
           load: true
           push: false
           context: ./${{ matrix.docker-file }}
-
-      - name: Download artifacts and test utilities
-        run: ./download.sh
 
       - name: Show images
         run: docker images

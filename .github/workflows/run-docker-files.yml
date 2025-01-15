@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        docker-file: [Dockerfile20, Dockerfile22, Dockerfile24]
+        docker-file: [dockerfile-ubuntu-20, dockerfile-ubuntu-22, dockerfile-ubuntu-24]
     runs-on: ubuntu-22.04
 
     steps:

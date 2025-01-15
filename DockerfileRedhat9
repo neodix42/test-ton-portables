@@ -1,0 +1,20 @@
+FROM redhat/ubi9
+RUN yum install -y wget binutils unzip fuse fuse-devel java-17-openjdk-headless
+RUN mkdir app
+COPY --chmod=744 /entry.sh /app
+WORKDIR "/app"
+ENTRYPOINT ["/app/entry.sh"]
+
+# libs ok
+
+# binaries
+#Fift build information: [ Commit: a93d093dc35e678fc7b3b3126a3975711e965f2c, Date: 2025-01-09 21:42:01 +0400]
+#2025-01-09T20:52:45.219797514Z validator-engine build information: [ Commit: a93d093dc35e678fc7b3b3126a3975711e965f2c, Date: 2025-01-09 21:42:01 +0400]
+                #2025-01-09T20:52:45.240569137Z validator-engine-console: /lib64/libtinfo.so.6: no version information available (required by /tmp/.mount_validaeONPbk/usr/lib/libreadline.so.8)
+#2025-01-09T20:52:45.250382350Z validator-engine-console build information: [ Commit: a93d093dc35e678fc7b3b3126a3975711e965f2c, Date: 2025-01-09 21:42:01 +0400]
+                #2025-01-09T20:52:45.267087967Z lite-client: /lib64/libtinfo.so.6: no version information available (required by /tmp/.mount_lite-cPoCCLl/usr/lib/libreadline.so.8)
+#2025-01-09T20:52:45.283566666Z lite-client build information: [ Commit: a93d093dc35e678fc7b3b3126a3975711e965f2c, Date: 2025-01-09 21:42:01 +0400]
+#2025-01-09T20:52:45.319624448Z dht-server build information: [ Commit: a93d093dc35e678fc7b3b3126a3975711e965f2c, Date: 2025-01-09 21:42:01 +0400]
+
+
+# !!but still works

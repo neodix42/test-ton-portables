@@ -1,0 +1,53 @@
+name: Test TON portable binaries
+
+on: [push,workflow_dispatch,workflow_call]
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        docker-files: [Dockerfile20, Dockerfile22, Dockerfile24]
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver-opts: image=moby/buildkit:v0.11.0
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build
+        id: docker_build
+        uses: docker/build-push-action@v6
+        with:
+          platforms: linux/amd64
+          push: false
+          context: ./
+
+      - name: Download artifacts and test utilities
+        run: ./download.sh
+
+      - name: Build docker images
+        run: |
+          docker build -t ${{ docker-files }} -f ${{ docker-files }} .
+          docker images
+          docker run {{ docker-files }}
+
+      - name: Run
+        run: |
+          timeout 180 docker run -rm {{ docker-files }} --privileged --cap-add=ALL

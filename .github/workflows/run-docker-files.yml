@@ -36,22 +36,15 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download artifacts and test utilities
-#        if: matrix.docker-file == 'dockerfile-ubuntu-20'
         run: |
           sudo apt install fuse libfuse2
-          wget --no-check-certificate https://github.com/neodix42/test-ton-libs/releases/latest/download/test-ton-libs.jar
+          wget --no-check-certificate -q https://github.com/neodix42/test-ton-libs/releases/latest/download/test-ton-libs.jar
           echo downloaded test-ton-libs          
-          wget --no-check-certificate https://github.com/neodix42/MyLocalTon/releases/download/v124/MyLocalTon-x86-64-dev.jar
+          wget --no-check-certificate -q https://github.com/neodix42/MyLocalTon/releases/download/v124/MyLocalTon-x86-64-dev.jar
           echo downloaded MyLocalTon          
-          wget --no-check-certificate https://github.com/neodix42/ton/releases/latest/download/ton-linux-x86_64.zip
+          wget --no-check-certificate -q https://github.com/neodix42/ton/releases/latest/download/ton-linux-x86_64.zip
           echo downloaded ton-appimages
           ls -larth
-
-#      - name: Other wait for download to finish
-#        if: matrix.docker-file != 'dockerfile-ubuntu-20'
-#        run: |
-#          sleep 60
-#          ls -larth
 
       - name: Build
         id: docker_build
@@ -68,4 +61,4 @@ jobs:
         run: docker images
 
       - name: Run
-        run: timeout 180 docker run ${{ matrix.docker-file }} --privileged --cap-add=ALL
+        run: timeout 180 docker run ${{ matrix.docker-file }} --privileged --cap-add SYS_ADMIN --device /dev/fuse

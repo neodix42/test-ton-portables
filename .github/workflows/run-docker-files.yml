@@ -48,10 +48,7 @@ jobs:
         run: ./download.sh
 
       - name: Show images
-        run: |
-#          docker build -t ${{ matrix.docker-file }} -f ${{ matrix.docker-file }} .
-          docker images
+        run: docker images
 
       - name: Run
-        run: |
-          timeout 180 docker run -rm {{ matrix.docker-file }} --privileged --cap-add=ALL
+        run: timeout 180 docker run -rm {{ matrix.docker-file }} --privileged --cap-add=ALL

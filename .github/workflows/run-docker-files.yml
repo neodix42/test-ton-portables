@@ -7,7 +7,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        docker-files: [Dockerfile20, Dockerfile22, Dockerfile24]
+        docker-file: [Dockerfile20, Dockerfile22, Dockerfile24]
     runs-on: ubuntu-22.04
 
     steps:
@@ -44,10 +44,10 @@ jobs:
 
       - name: Build docker images
         run: |
-          docker build -t ${{ docker-files }} -f ${{ docker-files }} .
+          docker build -t ${{ matrix.docker-file }} -f ${{ matrix.docker-file }} .
           docker images
           docker run {{ docker-files }}
 
       - name: Run
         run: |
-          timeout 180 docker run -rm {{ docker-files }} --privileged --cap-add=ALL
+          timeout 180 docker run -rm {{ matrix.docker-file }} --privileged --cap-add=ALL

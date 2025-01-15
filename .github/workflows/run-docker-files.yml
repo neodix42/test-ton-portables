@@ -40,17 +40,17 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           platforms: linux/amd64
+          load: true
           push: false
-          context: ./
+          context: ./{ matrix.docker-file }}
 
       - name: Download artifacts and test utilities
         run: ./download.sh
 
-      - name: Build docker images
+      - name: Show images
         run: |
-          docker build -t ${{ matrix.docker-file }} -f ${{ matrix.docker-file }} .
+#          docker build -t ${{ matrix.docker-file }} -f ${{ matrix.docker-file }} .
           docker images
-          docker run {{ docker-files }}
 
       - name: Run
         run: |

@@ -36,14 +36,14 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download artifacts and test utilities
-        if: matrix.docker-file == 'dockerfile-ubuntu-20'
+#        if: matrix.docker-file == 'dockerfile-ubuntu-20'
         run: |
-          apt install fuse libfuse2
-          wget --no-check-certificate -qnc https://github.com/neodix42/test-ton-libs/releases/latest/download/test-ton-libs.jar
+          sudo apt install fuse libfuse2
+          wget --no-check-certificate https://github.com/neodix42/test-ton-libs/releases/latest/download/test-ton-libs.jar
           echo downloaded test-ton-libs          
-          wget --no-check-certificate -qnc https://github.com/neodix42/MyLocalTon/releases/download/v124/MyLocalTon-x86-64-dev.jar
+          wget --no-check-certificate https://github.com/neodix42/MyLocalTon/releases/download/v124/MyLocalTon-x86-64-dev.jar
           echo downloaded MyLocalTon          
-          wget --no-check-certificate -qnc https://github.com/neodix42/ton/releases/latest/download/ton-linux-x86_64.zip
+          wget --no-check-certificate https://github.com/neodix42/ton/releases/latest/download/ton-linux-x86_64.zip
           echo downloaded ton-appimages
           ls -larth
 

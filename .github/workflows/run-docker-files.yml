@@ -49,7 +49,8 @@ jobs:
           platforms: linux/amd64
           load: true
           push: false
-          context: ./${{ matrix.docker-file }}
+          context: ./
+          file: ./${{ matrix.docker-file }}
 
       - name: Show images
         run: docker images

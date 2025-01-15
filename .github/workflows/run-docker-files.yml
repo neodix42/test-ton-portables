@@ -37,6 +37,7 @@ jobs:
 
       - name: Download artifacts and test utilities
         run: |
+          chmod +x download.sh 
           ./download.sh
           pwd
           ls -lart

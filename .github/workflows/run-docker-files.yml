@@ -42,7 +42,7 @@ jobs:
           platforms: linux/amd64
           load: true
           push: false
-          context: ./{ matrix.docker-file }}
+          context: ./{{ matrix.docker-file }}
 
       - name: Download artifacts and test utilities
         run: ./download.sh

@@ -52,6 +52,7 @@ jobs:
           push: false
           context: ./
           file: ./${{ matrix.docker-file }}
+          tags: ${{ matrix.docker-file }}
 
       - name: Show images
         run: docker images

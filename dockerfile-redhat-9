@@ -1,5 +1,5 @@
 FROM redhat/ubi9
-RUN yum install -y wget binutils unzip fuse fuse-devel java-17-openjdk-headless
+RUN yum install -y wget binutils unzip fuse fuse-devel java-21-openjdk-headless
 RUN mkdir app
 COPY --chmod=744 /entry.sh /app
 COPY --chmod=744 test-ton-libs.jar /app

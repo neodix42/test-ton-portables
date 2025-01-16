@@ -1,5 +1,5 @@
 FROM debian:11
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y wget unzip openjdk-17-jre-headless fuse libfuse2 kmod lsb-release binutils
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y wget unzip openjdk-21-jre-headless fuse libfuse2 kmod lsb-release binutils
 
 #RUN wget https://security.ubuntu.com/ubuntu/pool/universe/g/gcc-11/g++-11_11.4.0-9ubuntu1_amd64.deb && apt install ./g++-11_11.4.0-9ubuntu1_amd64.deb
 

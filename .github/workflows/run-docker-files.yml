@@ -61,4 +61,4 @@ jobs:
         run: docker images
 
       - name: Run
-        run: timeout 180 docker run ${{ matrix.docker-file }} --privileged --cap-add SYS_ADMIN --device /dev/fuse
+        run: timeout 180 docker run --privileged --cap-add=ALL ${{ matrix.docker-file }}

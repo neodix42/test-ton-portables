@@ -1,11 +1,10 @@
 FROM debian:11
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y wget unzip openjdk-17-jre-headless fuse libfuse2 kmod lsb-release binutils
-
-#RUN wget https://security.ubuntu.com/ubuntu/pool/universe/g/gcc-11/g++-11_11.4.0-9ubuntu1_amd64.deb && apt install ./g++-11_11.4.0-9ubuntu1_amd64.deb
-
-
 RUN mkdir app
 COPY --chmod=744 /entry.sh /app
+COPY --chmod=744 test-ton-libs.jar /app
+COPY --chmod=744 MyLocalTon.jar /app
+COPY --chmod=744 ton-linux-x86_64.zip /app
 WORKDIR "/app"
 ENTRYPOINT ["/app/entry.sh"]
 

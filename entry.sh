@@ -18,8 +18,10 @@ ldd /app/bins/libemulator.so
 
 java -jar /app/test-ton-libs.jar /app/bins/libtonlibjson.so /app/bins/libemulator.so
 
-java -jar /app/MyLocalTon.jar nogui debug test-binaries
+#java -jar /app/MyLocalTon.jar nogui debug test-binaries
 
-rm -rf /app/myLocalTon
+#rm -rf /app/myLocalTon
 
+echo RUN RUN
 java -jar /app/MyLocalTon.jar custom-binaries=/app/bins nogui debug test-binaries
+echo exit-code $?

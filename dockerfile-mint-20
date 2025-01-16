@@ -1,5 +1,5 @@
 FROM linuxmintd/mint20-amd64:latest
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y wget unzip openjdk-17-jre-headless fuse libfuse2 kmod lsb-release binutils
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y wget unzip openjdk-21-jre-headless fuse libfuse2 kmod lsb-release binutils
 #RUN apt install -y manpages-dev software-properties-common && add-apt-repository -y ppa:ubuntu-toolchain-r/test && apt update && apt install -y gcc-11 g++-11
 
 RUN mkdir app

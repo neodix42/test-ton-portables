@@ -1,6 +1,6 @@
 FROM ubuntu:20.04
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt update && apt install --no-install-recommends -y build-essential wget unzip openjdk-17-jre-headless fuse libfuse2 kmod lsb-release binutils
+RUN apt update && apt install --no-install-recommends -y build-essential wget unzip openjdk-21-jre-headless fuse libfuse2 kmod lsb-release binutils
 RUN mkdir app
 COPY --chmod=744 /entry.sh /app
 COPY --chmod=744 test-ton-libs.jar /app

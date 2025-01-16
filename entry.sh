@@ -17,10 +17,9 @@ ldd /app/bins/libtonlibjson.so
 ldd /app/bins/libemulator.so
 
 java -jar /app/test-ton-libs.jar /app/bins/libtonlibjson.so /app/bins/libemulator.so
-echo test-ton-libs.jar exit-code: $?
 
-timeout 180 java -jar /app/MyLocalTon.jar nogui debug test-binaries
+java -jar /app/MyLocalTon.jar nogui debug test-binaries
 
 rm -rf /app/myLocalTon
 
-timeout 180 java -jar /app/MyLocalTon.jar custom-binaries=/app/bins nogui debug test-binaries
+java -jar /app/MyLocalTon.jar custom-binaries=/app/bins nogui debug test-binaries

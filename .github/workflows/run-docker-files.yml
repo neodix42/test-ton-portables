@@ -11,8 +11,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        docker-file: [dockerfile-ubuntu-20, dockerfile-ubuntu-22, dockerfile-ubuntu-24]
-    runs-on: windows-2019
+        docker-file: [dockerfile-ubuntu-20, dockerfile-ubuntu-22, dockerfile-ubuntu-24, dockerfile-debian-11, dockerfile-debian-12]
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Check out repository
@@ -61,4 +61,4 @@ jobs:
         run: docker images
 
       - name: Run
-        run: timeout 180 docker run --privileged --cap-add=ALL ${{ matrix.docker-file }}
+        run: docker run --privileged --cap-add=ALL ${{ matrix.docker-file }}

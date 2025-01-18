@@ -16,7 +16,7 @@ jobs:
                       dockerfile-mint-20,dockerfile-mint-21,
                       dockerfile-redhat-8,dockerfile-redhat-9,
                       dockerfile-centos-7,dockerfile-centos-8,
-                      dockerfile-rebornos, dockerfile-fedora]
+                      dockerfile-rebornos, dockerfile-fedora, dockerfile-arch-linux]
     runs-on: ubuntu-22.04
 
     steps:

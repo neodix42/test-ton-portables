@@ -23,5 +23,3 @@ COPY genesis/scripts/liteserver.pub /var/ton-work/db
 
 WORKDIR "/app"
 ENTRYPOINT ["/app/entry.sh"]
-
-# libs ok

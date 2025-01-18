@@ -23,11 +23,3 @@ COPY genesis/scripts/liteserver.pub /var/ton-work/db
 
 WORKDIR "/app"
 ENTRYPOINT ["/app/entry.sh"]
-
-#without libc
-#test-ton-libs - OK
-#MyLocalTon    - OK
-
-#with libc
-#test-ton-libs - OK
-#MyLocalTon    - OK

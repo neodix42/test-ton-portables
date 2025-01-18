@@ -20,23 +20,15 @@ mkdir -p /usr/share/ton /usr/lib/fift
 cp -R /usr/local/bin/smartcont/* /usr/share/ton/smartcont/
 cp -R /usr/local/bin/lib/* /usr/lib/fift/
 
-ls -larth /usr/share/ton/
-
 cp /usr/share/data/gen-zerostate.fif /usr/share/ton/smartcont/
-cat /usr/share/ton/smartcont/gen-zerostate.fif
 
 fift -V
-echo ok
 validator-engine -V
 validator-engine-console -V
 lite-client -V
 dht-server -V
-echo ok2
 
 ldd /usr/local/bin/libtonlibjson.so
 ldd /usr/local/bin/libemulator.so
-
-#java -jar /app/test-ton-libs.jar /usr/local/bin/libtonlibjson.so //usr/local/bin/libemulator.so
-
 
 /scripts/start-node.sh

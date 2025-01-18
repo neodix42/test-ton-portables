@@ -1,5 +1,5 @@
 FROM archlinux:latest
-RUN yes | pacman -Sy wget binutils unzip fuse jre17-openjdk
+RUN yes | pacman -Sy wget binutils unzip fuse jre17-openjdk bc
 RUN mkdir app
 COPY --chmod=744 entry.sh /app
 

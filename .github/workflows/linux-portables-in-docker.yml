@@ -1,4 +1,4 @@
-name: Test TON portable binaries
+name: Test linux x86-64 portable binaries
 
 on: [push,workflow_dispatch,workflow_call]
 

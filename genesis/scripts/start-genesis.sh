@@ -199,6 +199,6 @@ nohup validator-engine -C /var/ton-work/db/global.config.json -v $VERBOSITY --db
 
 echo sleep 3min and check if 30 blocks were generated and exit
 sleep 180
-exit $(grep "seqno\":30," log.session-stats)
+exit $(grep "seqno\":30,"  /var/ton-work/logs/log.session-stats)
 
 

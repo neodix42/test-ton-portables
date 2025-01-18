@@ -35,16 +35,9 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Download artifacts and test utilities
+      - name: Install fuse & libfuse2 on github server
         run: |
           sudo apt install fuse libfuse2
-          wget --no-check-certificate -q https://github.com/neodix42/test-ton-libs/releases/latest/download/test-ton-libs.jar
-          echo downloaded test-ton-libs          
-          wget --no-check-certificate -q http://89.39.107.48:8000/MyLocalTon1.jar -O MyLocalTon.jar
-          echo downloaded MyLocalTon
-          wget --no-check-certificate -q https://github.com/neodix42/ton/releases/latest/download/ton-linux-x86_64.zip
-          echo downloaded ton-appimages
-          ls -larth
 
       - name: Build
         id: docker_build

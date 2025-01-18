@@ -2,13 +2,29 @@ FROM centos:centos8
 
 RUN sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-* && \
     sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
-RUN yum install -y wget binutils unzip fuse fuse-devel java-21-openjdk-headless
+RUN yum install -y wget binutils unzip fuse fuse-devel java-17-openjdk-headless
 
 RUN mkdir app
 COPY --chmod=744 /entry.sh /app
-COPY --chmod=744 test-ton-libs.jar /app
-COPY --chmod=744 MyLocalTon.jar /app
-COPY --chmod=744 ton-linux-x86_64.zip /app
+
+RUN mkdir -p /scripts/web  \
+    /usr/share/data \
+    /usr/share/ton/smartcont \
+    /var/ton-work/db/static \
+    /var/ton-work/db/keyring \
+    /var/ton-work/db/import \
+    /var/ton-work/logs
+
+COPY --chmod=744 genesis/scripts/start-genesis.sh /scripts
+COPY --chmod=744 genesis/scripts/start-validator.sh /scripts
+COPY --chmod=744 genesis/scripts/start-node.sh /scripts
+COPY genesis/scripts/gen-zerostate.fif /usr/share/data
+COPY genesis/scripts/ton-private-testnet.config.json.template /var/ton-work/db
+COPY genesis/scripts/example.config.json /var/ton-work/db
+COPY genesis/scripts/control.template /var/ton-work/db
+COPY genesis/scripts/liteserver /var/ton-work/db
+COPY genesis/scripts/liteserver.pub /var/ton-work/db
+
 WORKDIR "/app"
 ENTRYPOINT ["/app/entry.sh"]
 

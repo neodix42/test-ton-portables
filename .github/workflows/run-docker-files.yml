@@ -11,7 +11,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        docker-file: [dockerfile-ubuntu-20, dockerfile-ubuntu-22, dockerfile-ubuntu-24, dockerfile-debian-11, dockerfile-debian-12,dockerfile-mint-21]
+        docker-file: [dockerfile-ubuntu-20, dockerfile-ubuntu-22, dockerfile-ubuntu-24,
+                      dockerfile-debian-11, dockerfile-debian-12,
+                      dockerfile-mint-20,dockerfile-mint-21,
+                      dockerfile-redhat-8,dockerfile-redhat-9,
+                      dockerfile-centos-7,dockerfile-centos-8,
+                      dockerfile-rebornos, dockerfile-fedora]
     runs-on: ubuntu-22.04
 
     steps:

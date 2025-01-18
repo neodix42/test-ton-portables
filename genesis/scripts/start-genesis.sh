@@ -52,7 +52,7 @@ else
   TMP_VAR=$(echo "($NEXT_BLOCK_GENERATION_DELAY*1000)/1" | bc)
   sed -i "s/NEXT_BLOCK_GENERATION_DELAY/$TMP_VAR/g" gen-zerostate.fif
 
-  cat /usr/share/ton/smartcont/gen-zerostate.fif
+#  cat /usr/share/ton/smartcont/gen-zerostate.fif
 
   create-state gen-zerostate.fif
   test $? -eq 0 || { echo "Can't generate zero-state"; exit 1; }
@@ -168,7 +168,7 @@ else
   [ $IPNUM -gt $((2**31)) ] && IPNUM=$(($IPNUM - $((2**32))))
   LITESERVERSCONFIG=$(printf "%q" "\"liteservers\":[{\"id\":{\"key\":\"E7XwFSQzNkcRepUC23J2nRpASXpnsEKmyyHYV4u/FZY=\", \"@type\":\"pub.ed25519\"}, \"port\":$LITE_PORT, \"ip\":$IPNUM }]}")
   sed -i -e "\$s#\(.*\)\}#\1,$LITESERVERSCONFIG#" my-ton-global.config.json
-  python3 -c 'import json; f=open("my-ton-global.config.json", "r"); config=json.loads(f.read()); f.close(); f=open("my-ton-global.config.json", "w");f.write(json.dumps(config, indent=2)); f.close()';
+#  python3 -c 'import json; f=open("my-ton-global.config.json", "r"); config=json.loads(f.read()); f.close(); f=open("my-ton-global.config.json", "w");f.write(json.dumps(config, indent=2)); f.close()';
 
   cp my-ton-global.config.json global.config.json
   rm my-ton-global.config.json control.new control.template ton-private-testnet.config.json.template example.config.json
@@ -193,7 +193,12 @@ else
   VERBOSITY=$VERBOSITY
 fi
 
+mkdir /var/ton-work/logs
 echo Started $NAME at $INTERNAL_IP:$PUBLIC_PORT
-validator-engine -C /var/ton-work/db/global.config.json -v $VERBOSITY --db /var/ton-work/db --ip "$INTERNAL_IP:$PUBLIC_PORT"
+nohup validator-engine -C /var/ton-work/db/global.config.json -v $VERBOSITY --db /var/ton-work/db -l /var/ton-work/logs/log --ip "$INTERNAL_IP:$PUBLIC_PORT" &
+
+echo sleep 3min and check if 30 blocks were generated and exit
+sleep 180
+exit $(grep "seqno\":30," log.session-stats)
 
 

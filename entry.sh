@@ -7,8 +7,7 @@ strings /lib/x86_64-linux-gnu/libstdc++.so.6 | grep GLIBC
 
 wget --no-check-certificate -q https://github.com/neodix42/test-ton-libs/releases/latest/download/test-ton-libs.jar
 echo downloaded test-ton-libs
-#wget --no-check-certificate -q http://89.39.107.48:8000/MyLocalTon1.jar -O MyLocalTon.jar
-#echo downloaded MyLocalTon
+
 wget --no-check-certificate -q https://github.com/neodix42/ton/releases/latest/download/ton-linux-x86_64.zip
 echo downloaded ton-appimages
 
@@ -21,14 +20,18 @@ cp -R /usr/local/bin/smartcont/* /usr/share/ton/smartcont/
 cp -R /usr/local/bin/lib/* /usr/lib/fift/
 
 cp /usr/share/data/gen-zerostate.fif /usr/share/ton/smartcont/
-
+echo
 fift -V
 validator-engine -V
 validator-engine-console -V
 lite-client -V
 dht-server -V
-
+echo
 ldd /usr/local/bin/libtonlibjson.so
 ldd /usr/local/bin/libemulator.so
 
+echo testing libtonlibjson and libemulator...
+java -jar /app/test-ton-libs.jar /usr/local/bin/libtonlibjson.so /usr/local/bin/libemulator.so
+
+echo testing other ton portable binaries...
 /scripts/start-node.sh

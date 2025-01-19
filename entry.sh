@@ -8,10 +8,10 @@ strings /lib/x86_64-linux-gnu/libstdc++.so.6 | grep GLIBC
 wget --no-check-certificate -q https://github.com/neodix42/test-ton-libs/releases/latest/download/test-ton-libs.jar
 echo downloaded test-ton-libs
 
-wget --no-check-certificate -q https://github.com/neodix42/ton/releases/latest/download/ton-linux-x86_64.zip
+wget --no-check-certificate -q https://github.com/neodix42/ton/releases/latest/download/ton-linux-$ARCH.zip
 echo downloaded ton-appimages
 
-unzip -qq ton-linux-x86_64.zip -d /usr/local/bin/
+unzip -qq ton-linux-$ARCH.zip -d /usr/local/bin/
 echo extracted ton-appimages
 ls -lart /usr/local/bin/
 

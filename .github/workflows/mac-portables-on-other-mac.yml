@@ -12,11 +12,11 @@ jobs:
         with:
           submodules: 'recursive'
 
-      - name: Run
+      - name: Install unzip
         run: |
           brew install unzip
 
-      - name: Run
+      - name: Run tests
         run: |
           mydir=$(pwd)
           wget --no-check-certificate -q https://github.com/neodix42/test-ton-libs/releases/latest/download/test-ton-libs.jar

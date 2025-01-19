@@ -62,4 +62,4 @@ jobs:
         run: docker images
 
       - name: Run
-        run: docker run --privileged --cap-add=ALL ${{ matrix.docker-file }} -e ARCH=arm64
+        run: docker run --privileged --cap-add=ALL -e ARCH='arm64' ${{ matrix.docker-file }}

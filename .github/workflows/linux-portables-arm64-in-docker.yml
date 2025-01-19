@@ -11,13 +11,18 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        docker-file: [dockerfile-ubuntu-20, dockerfile-ubuntu-22, dockerfile-ubuntu-24,
-                      dockerfile-debian-11, dockerfile-debian-12,
-                      dockerfile-mint-20,dockerfile-mint-21,
+        docker-file: [
+#                      dockerfile-ubuntu-20, # too old, we built on 22.04
+                      dockerfile-ubuntu-22, dockerfile-ubuntu-24,
+#                      dockerfile-debian-11, # too old
+                      dockerfile-debian-12,
+#                      dockerfile-mint-20,dockerfile-mint-21, # no image arm64
 #                      dockerfile-redhat-8, # outdated
                       dockerfile-redhat-9,
 #                      dockerfile-centos-7,dockerfile-centos-8, # outdated
-                      dockerfile-rebornos, dockerfile-fedora, dockerfile-arch-linux,
+#                      dockerfile-rebornos,
+                      dockerfile-fedora,
+#                      dockerfile-arch-linux, # no image arm64
                       dockerfile-opensuse-leap-15]
 
     runs-on: ubuntu-22.04-arm

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+echo ARCH=$ARCH
 pwd
 uname -a
 lsb_release -a

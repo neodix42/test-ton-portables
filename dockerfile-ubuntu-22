@@ -2,8 +2,8 @@ FROM ubuntu:22.04
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y wget unzip openjdk-17-jre-headless fuse libfuse2 kmod lsb-release binutils bc
 RUN mkdir app
 COPY --chmod=744 /entry.sh /app
-COPY --chmod=744 /test-portables.sh.sh /app
-COPY --chmod=744 /test-deb.sh.sh /app
+COPY --chmod=744 /test-portables.sh /app
+COPY --chmod=744 /test-deb.sh /app
 
 RUN mkdir -p /scripts/web  \
     /usr/share/data \

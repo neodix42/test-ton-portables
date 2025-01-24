@@ -177,7 +177,7 @@ else
 #  python3 -c 'import json; f=open("my-ton-global.config.json", "r"); config=json.loads(f.read()); f.close(); f=open("my-ton-global.config.json", "w");f.write(json.dumps(config, indent=2)); f.close()';
 
   cp my-ton-global.config.json global.config.json
-  rm my-ton-global.config.json control.new control.template ton-private-testnet.config.json.template example.config.json
+  rm my-ton-global.config.json control.new control.template ton-private-testnet.config.json.template
 
   echo Restart DHT server
   echo
@@ -203,6 +203,9 @@ mkdir /var/ton-work/logs
 echo Started $NAME at $INTERNAL_IP:$PUBLIC_PORT
 nohup validator-engine -C /var/ton-work/db/global.config.json -v $VERBOSITY --db /var/ton-work/db -l /var/ton-work/logs/log --ip "$INTERNAL_IP:$PUBLIC_PORT" &
 
+echo Using
+which validator-engine
+validator-engine -V
 echo sleep 3min and check if 30 blocks were generated and exit
 sleep 180
 grep "seqno\":30,"  /var/ton-work/logs/log.session-stats

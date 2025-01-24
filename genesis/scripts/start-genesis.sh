@@ -19,6 +19,8 @@ else
   echo
   echo "Creating zero state..."
   echo
+  mkdir -p /var/ton-work/db/{import,keyring,static}
+  mkdir /var/ton-work/logs
   cd /var/ton-work/db/keyring
 
   read -r VAL_ID_HEX VAL_ID_BASE64 <<< $(generate-random-id -m keys -n validator)
@@ -65,6 +67,7 @@ else
 
   cd /var/ton-work/db
   rm -f my-ton-global.config.json
+  cp /usr/share/data/ton-private-testnet.config.json.template .
   sed -e "s#ROOT_HASH#$(cat /usr/share/ton/smartcont/zerostate.rhash | base64)#g" -e "s#FILE_HASH#$(cat /usr/share/ton/smartcont/zerostate.fhash | base64)#g" ton-private-testnet.config.json.template > my-ton-global.config.json
   IP=$INTERNAL_IP; IPNUM=0; for (( i=0 ; i<4 ; ++i )); do ((IPNUM=$IPNUM+${IP%%.*}*$((256**$((3-${i})))))); IP=${IP#*.}; done
   [ $IPNUM -gt $((2**31)) ] && IPNUM=$(($IPNUM - $((2**32))))
@@ -76,7 +79,7 @@ else
   mkdir dht-server
   cd dht-server
   cp ../my-ton-global.config.json .
-  cp ../example.config.json .
+  cp /usr/share/data/example.config.json .
   dht-server -C example.config.json -D . -I "$INTERNAL_IP:$DHT_PORT"
 
   DHT_NODES=$(generate-random-id -m dht -k keyring/* -a "{
@@ -125,6 +128,7 @@ else
 
   # Adding client permissions
   rm -f control.new
+  cp /usr/share/data/control.template .
   sed -e "s/CONSOLE-PORT/\"$(printf "%q" $CONSOLE_PORT)\"/g" -e "s~SERVER-ID~\"$(printf "%q" $SERVER_ID2)\"~g" -e "s~CLIENT-ID~\"$(printf "%q" $CLIENT_ID2)\"~g" control.template > control.new
   sed -e "s~\"control\"\ \:\ \[~$(printf "%q" $(cat control.new))~g" config.json > config.json.new
   mv config.json.new config.json
@@ -157,6 +161,8 @@ else
   # current dir /var/ton-work/db
   # install lite-server using predefined lite-server keys
   #read -r LITESERVER_ID1 LITESERVER_ID2 <<< $(generate-random-id -m keys -n liteserver)
+  cp /usr/share/data/liteserver .
+  cp /usr/share/data/liteserver.pub .
   echo "Liteserver IDs: DA46DE8CCCED9AB6F29447B334636FBE07F7F4CAE6B6833D26AF1240A1BB34B1 2kbejMztmrbylEezNGNvvgf39MrmtoM9Jq8SQKG7NLE="
   cp liteserver /var/ton-work/db/keyring/DA46DE8CCCED9AB6F29447B334636FBE07F7F4CAE6B6833D26AF1240A1BB34B1
 

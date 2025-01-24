@@ -1,5 +1,5 @@
 FROM ubuntu:22.04
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y wget unzip openjdk-17-jre-headless fuse libfuse2 kmod lsb-release binutils bc gnupg gnupg2 gnupg1
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y wget unzip openjdk-17-jre-headless fuse libfuse2 kmod lsb-release binutils bc gnupg gnupg2 gnupg1 software-properties-common
 RUN mkdir app
 COPY --chmod=744 /entry.sh /app
 COPY --chmod=744 /test-portables.sh /app

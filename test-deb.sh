@@ -14,7 +14,7 @@ cp /usr/share/data/gen-zerostate.fif /usr/share/ton/smartcont/
 echo
 fift -V
 if [ $? -ne 0 ]; then
-  echo simple fift test FAILED
+  echo simple deb fift test FAILED
   exit 1
 fi
 validator-engine -V

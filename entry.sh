@@ -2,8 +2,10 @@
 
 /app/test-portables.sh
 if [ $? -ne 0 ]; then
-  echo portable tests failed
+  echo PORTABLE TESTS FAILED
+  exit 1
 else
+  echo PORTABLE TESTS PASSED
   apt -h
   if [ $? -eq 0 ]; then
     echo run ton deb packages testing

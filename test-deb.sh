@@ -6,8 +6,8 @@ rm -rf /usr/share/ton/smartcont/*
 rm -rf /var/ton-work/*
 
 sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F6A649124520E5F3
-sudo add-apt-repository ppa:ton-foundation/ppa
-sudo apt update
+sudo add-apt-repository -y ppa:ton-foundation/ppa
+sudo apt update -y
 sudo apt install -y ton
 
 #echo ARCH=$ARCH

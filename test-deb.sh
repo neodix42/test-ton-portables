@@ -22,7 +22,7 @@ ldd /usr/lib/libtonlibjson.so.0.5
 ldd /usr/lib/libemulator.so
 
 echo testing libtonlibjson and libemulator...
-java -jar /app/test-ton-libs.jar/usr/lib/libtonlibjson.so.0.5 /usr/lib/libemulator.so
+java -jar /app/test-ton-libs.jar /usr/lib/libtonlibjson.so.0.5 /usr/lib/libemulator.so
 
 echo testing other ton portable binaries...
 /scripts/start-node.sh

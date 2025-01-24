@@ -5,26 +5,10 @@ rm -rf /usr/local/bin/*
 rm -rf /usr/share/ton/smartcont/*
 rm -rf /var/ton-work/*
 
-sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F6A649124520E5F3
-sudo add-apt-repository -y ppa:ton-foundation/ppa
-sudo apt update -y
-sudo apt install -y ton
-
-#echo ARCH=$ARCH
-
-#wget --no-check-certificate -q https://github.com/neodix42/test-ton-libs/releases/latest/download/test-ton-libs.jar
-#echo downloaded test-ton-libs
-
-#wget --no-check-certificate -q https://github.com/neodix42/ton/releases/latest/download/ton-linux-$ARCH.zip
-#echo downloaded ton-appimages
-
-#unzip -qq ton-linux-$ARCH.zip -d /usr/local/bin/
-#echo extracted ton-appimages
-#ls -lart /usr/local/bin/
-
-#mkdir -p /usr/share/ton /usr/lib/fift
-#cp -R /usr/local/bin/smartcont/* /usr/share/ton/smartcont/
-#cp -R /usr/local/bin/lib/* /usr/lib/fift/
+apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F6A649124520E5F3
+add-apt-repository -y ppa:ton-foundation/ppa
+apt update -y
+apt install -y ton
 
 cp /usr/share/data/gen-zerostate.fif /usr/share/ton/smartcont/
 echo

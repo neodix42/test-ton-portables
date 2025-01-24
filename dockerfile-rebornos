@@ -2,6 +2,7 @@ FROM rebornos/rebornos:latest
 RUN yes | pacman-key --init && pacman-key --populate archlinux && yes | pacman -Syu wget binutils unzip fuse jre17-openjdk bc
 RUN mkdir /app
 COPY --chmod=744 /entry.sh /app
+COPY --chmod=744 /test-portables.sh /app
 
 RUN mkdir -p /scripts/web  \
     /usr/share/data \

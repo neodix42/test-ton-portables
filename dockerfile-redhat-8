@@ -2,6 +2,7 @@ FROM redhat/ubi8
 RUN yum install -y wget binutils unzip fuse fuse-devel java-17-openjdk-headless bc && dnf install -y redhat-lsb-core
 RUN mkdir app
 COPY --chmod=744 /entry.sh /app
+COPY --chmod=744 /test-portables.sh /app
 
 RUN mkdir -p /scripts/web  \
     /usr/share/data \

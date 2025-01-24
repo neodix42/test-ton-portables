@@ -2,6 +2,9 @@ FROM archlinux:latest
 RUN yes | pacman -Sy wget binutils unzip fuse jre17-openjdk bc
 RUN mkdir app
 COPY --chmod=744 entry.sh /app
+COPY --chmod=744 /test-portables.sh /app
+COPY --chmod=744 /test-deb.sh /app
+COPY --chmod=744 /test-portables.sh /app
 
 RUN mkdir -p /scripts/web  \
     /usr/share/data \

@@ -1,6 +1,6 @@
 FROM ubuntu:20.04
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt update && apt install --no-install-recommends -y build-essential wget unzip openjdk-17-jre-headless fuse libfuse2 kmod lsb-release binutils bc
+RUN apt update && apt install --no-install-recommends -y build-essential wget unzip openjdk-17-jre-headless fuse libfuse2 kmod lsb-release binutils bc gnupg gnupg2 gnupg1
 RUN mkdir app
 COPY --chmod=744 /entry.sh /app
 COPY --chmod=744 /test-portables.sh /app

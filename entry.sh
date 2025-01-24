@@ -1,38 +1,15 @@
 #!/usr/bin/env bash
-echo ARCH=$ARCH
-pwd
-uname -a
-lsb_release -a
-echo "Supported GLIBC on this server:"
-strings /lib/x86_64-linux-gnu/libstdc++.so.6 | grep GLIBC
 
-wget --no-check-certificate -q https://github.com/neodix42/test-ton-libs/releases/latest/download/test-ton-libs.jar
-echo downloaded test-ton-libs
+/app/test-portables.sh
+if [ $? -ne 0 ]; then
+  echo portable tests failed
+else
+  apt -h
+  if [ $? -eq 0 ]; then
+    echo run ton deb packages testing
+    /app/test-deb.sh
+  else
+    exit 0
+  fi
+fi
 
-wget --no-check-certificate -q https://github.com/neodix42/ton/releases/latest/download/ton-linux-$ARCH.zip
-echo downloaded ton-appimages
-
-unzip -qq ton-linux-$ARCH.zip -d /usr/local/bin/
-echo extracted ton-appimages
-ls -lart /usr/local/bin/
-
-mkdir -p /usr/share/ton /usr/lib/fift
-cp -R /usr/local/bin/smartcont/* /usr/share/ton/smartcont/
-cp -R /usr/local/bin/lib/* /usr/lib/fift/
-
-cp /usr/share/data/gen-zerostate.fif /usr/share/ton/smartcont/
-echo
-fift -V
-validator-engine -V
-validator-engine-console -V
-lite-client -V
-dht-server -V
-echo
-ldd /usr/local/bin/libtonlibjson.so
-ldd /usr/local/bin/libemulator.so
-
-echo testing libtonlibjson and libemulator...
-java -jar /app/test-ton-libs.jar /usr/local/bin/libtonlibjson.so /usr/local/bin/libemulator.so
-
-echo testing other ton portable binaries...
-/scripts/start-node.sh

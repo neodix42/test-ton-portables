@@ -13,7 +13,7 @@ jobs:
       matrix:
         docker-file: [
 #                      dockerfile-ubuntu-20, # too old, we built on 22.04
-                      dockerfile-ubuntu-22, dockerfile-ubuntu-24,
+                      dockerfile-ubuntu-22, dockerfile-ubuntu-24, dockerfile-ubuntu-24.10, dockerfile-ubuntu-25,
 #                      dockerfile-debian-11, # too old
                       dockerfile-debian-12,
 #                      dockerfile-mint-20,dockerfile-mint-21, # no image arm64

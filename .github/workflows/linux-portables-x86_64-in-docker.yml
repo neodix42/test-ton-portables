@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        docker-file: [dockerfile-ubuntu-20, dockerfile-ubuntu-22, dockerfile-ubuntu-24,
+        docker-file: [dockerfile-ubuntu-20, dockerfile-ubuntu-22, dockerfile-ubuntu-24, dockerfile-ubuntu-24.10, dockerfile-ubuntu-25,
                       dockerfile-debian-11, dockerfile-debian-12,
                       dockerfile-mint-20,dockerfile-mint-21,
 #                      dockerfile-redhat-8, # outdated

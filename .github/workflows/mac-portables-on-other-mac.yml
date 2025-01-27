@@ -1,0 +1,28 @@
+name: Test mac-14 arm64 portable binaries on mac-15
+
+on: [push,workflow_dispatch,workflow_call]
+
+jobs:
+  build:
+    runs-on: macos-15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
+
+      - name: Install unzip
+        run: |
+          brew install unzip
+
+      - name: Run tests
+        run: |
+          mydir=$(pwd)
+          wget --no-check-certificate -q https://github.com/neodix42/test-ton-libs/releases/latest/download/test-ton-libs.jar
+          echo downloaded test-ton-libs          
+          wget --no-check-certificate -q https://github.com/neodix42/ton/releases/latest/download/ton-mac-arm64.zip
+          echo downloaded ton portable binaries
+          unzip ton-mac-arm64.zip
+          echo testing libtonlibjson and libemulator...
+          java -jar test-ton-libs.jar $mydir/libtonlibjson.dylib $mydir/libemulator.dylib

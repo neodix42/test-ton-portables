@@ -1,28 +1,22 @@
 #!/usr/bin/env bash
-pwd
-uname -a
-lsb_release -a
-echo "Supported GLIBC on this server:"
-strings /lib/x86_64-linux-gnu/libstdc++.so.6 | grep GLIBC
 
-unzip -qq ton-linux-x86_64.zip -d bins
+/app/test-portables.sh
+if [ $? -ne 0 ]; then
+  echo PORTABLE TESTS FAILED
+  exit 1
+else
+  echo PORTABLE TESTS PASSED
+  apt -h
+  if [ $? -eq 0 ]; then
+    if ! grep -q "Debian" /etc/os-release 2>/dev/null; then
+    echo run ton deb packages testing on Ubuntu
+    /app/test-deb.sh
+    else
+      echo Debian cant use Ubuntu repository
+      exit 0
+    fi
+  else
+    exit 0
+  fi
+fi
 
-/app/bins/fift -V
-/app/bins/validator-engine -V
-/app/bins/validator-engine-console -V
-/app/bins/lite-client -V
-/app/bins/dht-server -V
-
-ldd /app/bins/libtonlibjson.so
-ldd /app/bins/libemulator.so
-
-java -jar /app/test-ton-libs.jar /app/bins/libtonlibjson.so /app/bins/libemulator.so
-echo test-ton-libs.jar exit-code: $?
-
-timeout 600 java -jar /app/MyLocalTon.jar nogui debug test-binaries
-echo MyLocalTon.jar exit-code: $?
-
-rm -rf /app/myLocalTon
-
-timeout 600 java -jar /app/MyLocalTon.jar custom-binaries=/app/bins nogui debug test-binaries
-echo MyLocalTon.jar exit-code2: $?

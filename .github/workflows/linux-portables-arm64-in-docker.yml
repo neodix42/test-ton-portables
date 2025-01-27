@@ -1,4 +1,4 @@
-name: Test TON portable binaries
+name: Test linux arm64 portable binaries
 
 on: [push,workflow_dispatch,workflow_call]
 
@@ -11,8 +11,21 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        docker-file: [dockerfile-ubuntu-20, dockerfile-ubuntu-22, dockerfile-ubuntu-24, dockerfile-debian-11, dockerfile-debian-12]
-    runs-on: ubuntu-22.04
+        docker-file: [
+#                      dockerfile-ubuntu-20, # too old, we built on 22.04
+                      dockerfile-ubuntu-22, dockerfile-ubuntu-24, dockerfile-ubuntu-24.10, dockerfile-ubuntu-25,
+#                      dockerfile-debian-11, # too old
+                      dockerfile-debian-12,
+#                      dockerfile-mint-20,dockerfile-mint-21, # no image arm64
+#                      dockerfile-redhat-8, # outdated
+                      dockerfile-redhat-9,
+#                      dockerfile-centos-7,dockerfile-centos-8, # outdated
+#                      dockerfile-rebornos,
+                      dockerfile-fedora,
+#                      dockerfile-arch-linux, # no image arm64
+                      dockerfile-opensuse-leap-15]
+
+    runs-on: ubuntu-22.04-arm
 
     steps:
       - name: Check out repository
@@ -35,22 +48,15 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Download artifacts and test utilities
+      - name: Install fuse & libfuse2 on github server
         run: |
           sudo apt install fuse libfuse2
-          wget --no-check-certificate -q https://github.com/neodix42/test-ton-libs/releases/latest/download/test-ton-libs.jar
-          echo downloaded test-ton-libs          
-          wget --no-check-certificate -q http://89.39.107.48:8000/MyLocalTon1.jar -o MyLocalTon.jar
-          echo downloaded MyLocalTon
-          wget --no-check-certificate -q https://github.com/neodix42/ton/releases/latest/download/ton-linux-x86_64.zip
-          echo downloaded ton-appimages
-          ls -larth
 
       - name: Build
         id: docker_build
         uses: docker/build-push-action@v6
         with:
-          platforms: linux/amd64
+          platforms: linux/arm64
           load: true
           push: false
           context: ./
@@ -61,4 +67,4 @@ jobs:
         run: docker images
 
       - name: Run
-        run: docker run --privileged --cap-add=ALL ${{ matrix.docker-file }}
+        run: docker run --privileged --cap-add=ALL -e ARCH='arm64' ${{ matrix.docker-file }}

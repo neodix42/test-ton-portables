@@ -29,4 +29,5 @@ jobs:
           otool -L $mydir/libtonlibjson.dylib          
           echo otool -L $mydir/libemulator.dylib
           otool -L $mydir/libemulator.dylib
+          java --version
           java -jar test-ton-libs.jar $mydir/libtonlibjson.dylib $mydir/libemulator.dylib

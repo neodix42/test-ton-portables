@@ -25,4 +25,8 @@ jobs:
           echo downloaded ton portable binaries
           unzip ton-mac-arm64.zip
           echo testing libtonlibjson and libemulator...
+          echo otool -L $mydir/libtonlibjson.dylib
+          otool -L $mydir/libtonlibjson.dylib          
+          echo otool -L $mydir/libemulator.dylib
+          otool -L $mydir/libemulator.dylib
           java -jar test-ton-libs.jar $mydir/libtonlibjson.dylib $mydir/libemulator.dylib

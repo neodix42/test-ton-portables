@@ -1,4 +1,4 @@
-name: Test mac-15 arm64 portable binaries
+name: Test mac-15 arm64 portable shared libraries
 
 on: [push,workflow_dispatch,workflow_call]
 

@@ -20,7 +20,7 @@ jobs:
         run: |
           mydir=$(pwd)
           wget --no-check-certificate -q https://github.com/neodix42/test-ton-libs/releases/latest/download/test-ton-libs.jar
-          echo downloaded test-ton-libs          
+          echo downloaded test-ton-libs
           wget --no-check-certificate -q https://github.com/neodix42/ton/releases/latest/download/ton-mac-arm64.zip
           echo downloaded ton portable binaries
           unzip ton-mac-arm64.zip

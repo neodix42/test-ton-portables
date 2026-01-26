@@ -12,6 +12,12 @@ jobs:
         with:
           submodules: 'recursive'
 
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
       - name: Run tests (pwsh)
         shell: pwsh
         run: |

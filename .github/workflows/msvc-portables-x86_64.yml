@@ -12,10 +12,6 @@ jobs:
         with:
           submodules: 'recursive'
 
-      - name: Install unzip
-        run: |
-          brew install unzip
-
       - name: Run tests (pwsh)
         shell: pwsh
         run: |

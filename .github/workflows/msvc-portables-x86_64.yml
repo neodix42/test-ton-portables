@@ -1,0 +1,32 @@
+name: Test windows x86_64 portable shared libraries
+
+on: [push,workflow_dispatch,workflow_call]
+
+jobs:
+  build:
+    runs-on: windows-2022
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Run tests (pwsh)
+        shell: pwsh
+        run: |
+          $mydir = (Get-Location).Path
+          Invoke-WebRequest -Uri "https://github.com/neodix42/test-ton-libs/releases/latest/download/test-ton-libs.jar" -OutFile "test-ton-libs.jar"
+          Write-Host "downloaded test-ton-libs"
+          Invoke-WebRequest -Uri "https://github.com/neodix42/ton/releases/latest/download/ton-win-x86-64.zip" -OutFile "ton-win-x86-64.zip"
+          Write-Host "downloaded ton portable binaries"
+          Expand-Archive -Force "ton-win-x86-64.zip" $mydir
+          Write-Host "testing tonlibjson and emulator..."
+          java --version
+          java -jar "test-ton-libs.jar" "$mydir\tonlibjson.dll" "$mydir\emulator.dll"

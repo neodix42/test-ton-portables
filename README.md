@@ -8,3 +8,14 @@ Within every docker image we execute the following:
 3. run completely new standalone TON blockchain based on `downloaded` portable binaries. If 30 blocks get generated then we mark the test as successful;
 4. install deb packages from PPA launchpad (`apt install ton`);
 3. again run completely new standalone TON blockchain based on `installed` binaries from PPA. If 30 blocks generated then we mark the test as successful.
+
+# Test TON compilation
+```bash
+docker build -f dockerfile-debian-12-compile -t ton-build .
+docker run ton-build
+```
+
+## Run a container without an entry point
+```bash
+docker run --rm -it --entrypoint "" ton-build bash
+```

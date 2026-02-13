@@ -1,0 +1,11 @@
+FROM archlinux:latest
+RUN pacman -Syu --noconfirm \
+        wget curl binutils unzip fuse bc libtool pkg-config autoconf automake \
+        git cmake ninja autogen gnupg llvm clang make jemalloc
+
+COPY --chmod=744 ./ton /
+COPY --chmod=744 ./build-ubuntu-shared.sh /
+
+WORKDIR "/"
+ENTRYPOINT ["/bin/bash"]
+CMD ["-c", "./build-ubuntu-shared.sh"]

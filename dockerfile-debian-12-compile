@@ -1,0 +1,14 @@
+FROM debian:12
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y ca-certificates wget libtool \
+    unzip openjdk-17-jre-headless fuse libfuse2 kmod lsb-release binutils bc gnupg gnupg2 gnupg1 pkg-config autoconf automake \
+    software-properties-common  python3-launchpadlib build-essential git cmake ninja-build libjemalloc-dev ccache autogen \
+    && wget --tries=10 --retry-connrefused --waitretry=3 https://apt.llvm.org/llvm.sh  \
+    && chmod +x llvm.sh \
+    && ./llvm.sh 21 clang
+
+COPY --chmod=744 ./ton /
+COPY --chmod=744 ./build-ubuntu-shared.sh /
+
+WORKDIR "/"
+ENTRYPOINT ["/bin/bash"]
+CMD ["-c", "./build-ubuntu-shared.sh"]

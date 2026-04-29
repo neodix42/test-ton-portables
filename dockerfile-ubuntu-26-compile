@@ -1,10 +1,11 @@
-FROM debian:12
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y ca-certificates wget libtool \
-    unzip openjdk-17-jre-headless fuse libfuse2 kmod lsb-release binutils bc gnupg gnupg2 gnupg1 pkg-config autoconf automake \
+FROM ubuntu:26.04
+RUN apt update && DEBIAN_FRONTEND=noninteractive apt install --no-install-recommends -y ca-certificates wget libtool \
+    unzip fuse libfuse2 kmod lsb-release binutils bc gnupg gnupg2 gnupg1 pkg-config autoconf automake \
     software-properties-common  python3-launchpadlib build-essential git cmake ninja-build libjemalloc-dev ccache autogen
 
 COPY --chmod=744 ./install-clang-21-ubuntu.sh /install-clang-21-ubuntu.sh
 RUN /install-clang-21-ubuntu.sh
+
 COPY --chmod=744 ./ton /
 COPY --chmod=744 ./build-ubuntu-shared.sh /
 

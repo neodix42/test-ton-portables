@@ -30,6 +30,15 @@ PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -v
 
 Repository setup tests run with mocked commands in disposable containers with networking disabled and no host mounts. Node lifecycle tests use isolated child processes. Neither test suite starts a TON blockchain or modifies host system directories. Set `TEST_DOCKER_IMAGE` to use a different local Ubuntu image.
 
+To check full-node identity rotation against a real TON build (including the default certificate settings that exposed the validator crash):
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 TON_BUILD_DIR=/path/to/ton/build \
+  python3 -m unittest discover -s tests -p test_fullnode_rotation.py -v
+```
+
+This optional integration test uses temporary databases, local ports, and no live-chain peers. It rotates the full-node ADNL identity twice with certificate acceptance disabled, enabled for any validator, and enabled for one sender. Set `TON_VALIDATOR_ENGINE` to compare a different validator executable against the same helper binaries. Without `TON_BUILD_DIR`, these integration tests are skipped.
+
 ## Run a container without an entry point
 ```bash
 docker run --rm -it --entrypoint "" ton-build bash

@@ -6,10 +6,16 @@ lsb_release -a
 echo "Supported GLIBC on this server:"
 strings /lib/x86_64-linux-gnu/libstdc++.so.6 | grep GLIBC
 
-wget --no-check-certificate -q https://github.com/neodix42/test-ton-libs/releases/latest/download/test-ton-libs.jar
+wget --timeout=30 --tries=3 --waitretry=2 --no-check-certificate -q https://github.com/neodix42/test-ton-libs/releases/latest/download/test-ton-libs.jar || {
+  echo "Failed to download the TON library tests" >&2
+  exit 1
+}
 echo downloaded test-ton-libs
 
-wget --no-check-certificate -q https://github.com/neodix42/ton/releases/latest/download/ton-linux-$ARCH.zip
+wget --timeout=30 --tries=3 --waitretry=2 --no-check-certificate -q https://github.com/neodix42/ton/releases/latest/download/ton-linux-$ARCH.zip || {
+  echo "Failed to download TON portable binaries" >&2
+  exit 1
+}
 echo downloaded ton-appimages
 
 unzip -qq ton-linux-$ARCH.zip -d /usr/local/bin/
@@ -36,7 +42,20 @@ ldd /usr/local/bin/libtonlibjson.so
 ldd /usr/local/bin/libemulator.so
 
 echo testing libtonlibjson and libemulator...
-java -jar /app/test-ton-libs.jar /usr/local/bin/libtonlibjson.so /usr/local/bin/libemulator.so
+if timeout --signal=TERM --kill-after=10s 180s java -jar /app/test-ton-libs.jar /usr/local/bin/libtonlibjson.so /usr/local/bin/libemulator.so; then
+  echo "Portable library tests PASSED"
+else
+  status=$?
+  echo "Portable library tests FAILED (status $status; limit 180 seconds)" >&2
+  exit "$status"
+fi
 
 echo testing other ton portable binaries...
-/scripts/start-node.sh
+if timeout --signal=TERM --kill-after=30s 360s /scripts/start-node.sh; then
+  echo "Portable genesis tests PASSED"
+else
+  status=$?
+  echo "Portable genesis tests FAILED (status $status; limit 360 seconds)" >&2
+  exit "$status"
+fi
+echo "PORTABLE TESTS PASSED"

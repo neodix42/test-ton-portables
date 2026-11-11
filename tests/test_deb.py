@@ -33,8 +33,22 @@ case "$name" in
       printf 'installed contract\n' > /usr/share/ton/smartcont/wallet-v3-code.fif
     fi
     ;;
+  wget)
+    if [[ $FAIL_COMMAND == wget ]]; then exit "$FAIL_STATUS"; fi
+    printf 'downloaded jar\n' > /app/test-ton-libs.jar
+    ;;
   install|rm|cp) "/usr/bin/$name" "$@" ;;
-  java|fift|validator-engine|validator-engine-console|lite-client|dht-server|ldd)
+  timeout)
+    if [[ $FAIL_COMMAND == timeout ]]; then exit "$FAIL_STATUS"; fi
+    if [[ $FAIL_COMMAND == genesis-timeout && ${!#} == /scripts/start-node.sh ]]; then exit "$FAIL_STATUS"; fi
+    shift 3
+    exec "$@"
+    ;;
+  java)
+    [[ -s /app/test-ton-libs.jar ]] || exit 2
+    if [[ $FAIL_COMMAND == java ]]; then exit "$FAIL_STATUS"; fi
+    ;;
+  fift|validator-engine|validator-engine-console|lite-client|dht-server|ldd)
     if [[ $FAIL_COMMAND == "$name" ]]; then exit "$FAIL_STATUS"; fi
     ;;
   start-node.sh)
@@ -77,7 +91,7 @@ class DebTests(unittest.TestCase):
         setup += write_file("/app/ton-foundation-ppa.asc", (ROOT / "keys/ton-foundation-ppa.asc").read_text())
         setup += write_file("/app/test-deb.sh", (ROOT / "test-deb.sh").read_text(), executable=True)
         setup += write_file("/app/entry.sh", (ROOT / "entry.sh").read_text(), executable=True)
-        setup += """for command in dpkg apt-get install rm cp fift validator-engine validator-engine-console lite-client dht-server ldd java; do
+        setup += """for command in dpkg apt-get install rm cp fift validator-engine validator-engine-console lite-client dht-server ldd java timeout wget; do
   ln -s /mockbin/mock "/mockbin/$command"
 done
 ln -s /mockbin/mock /scripts/start-node.sh
@@ -163,11 +177,14 @@ exit 0
                 self.assertIn("DEB TESTS PASSED", output)
                 apt_calls = [i for i, command in enumerate(commands) if command == "apt-get"]
                 self.assertEqual(len(apt_calls), 2, log)
+                self.assertLess(commands.index("wget"), apt_calls[0], log)
+                self.assertIn("--timeout=30 --tries=3 -q -O /app/test-ton-libs.jar", "\n".join(log))
                 self.assertLess(apt_calls[0], commands.index("rm"), log)
                 self.assertLess(commands.index("rm"), apt_calls[1], log)
                 self.assertLess(apt_calls[1], commands.index("fift"), log)
                 self.assertIn("java", commands)
                 self.assertIn("start-node.sh", commands)
+                self.assertIn("DEB GENESIS TESTS PASSED", output)
                 self.assertIn("node-libraries\t/usr/lib/libtonlibjson.so.0.5 /usr/lib/libemulator.so", log)
                 suite = case.get("ubuntu_codename", case.get("suite", "noble"))
                 self.assertIn(f" {suite} main", source)
@@ -175,6 +192,35 @@ exit 0
                 self.assertIn("signed-by=/etc/apt/keyrings/ton-foundation-ppa.asc", source)
                 self.assertEqual(retained, 0, output)
                 self.assertIn("__TON_INSTALLED_CONTRACT_RETAINED__", output)
+
+    def test_jar_download_failure_stops_before_setup_or_cleanup(self):
+        code, commands, _, source, retained, output = self.run_script(fail="wget", status=4)
+        self.assertEqual(code, 4, output)
+        self.assertEqual(commands, ["dpkg", "wget"])
+        self.assertEqual(source, "")
+        self.assertEqual(retained, 3, output)
+        self.assertNotIn("DEB TESTS PASSED", output)
+
+    def test_library_timeout_fails_before_genesis(self):
+        code, commands, log, _, _, output = self.run_script(fail="timeout", status=124)
+        self.assertEqual(code, 124, output)
+        self.assertIn("timeout", commands)
+        self.assertIn("--signal=TERM --kill-after=10s 180s java -jar", "\n".join(log))
+        self.assertIn("DEB LIBRARY TESTS FAILED: timed out after 180 seconds", output)
+        self.assertNotIn("DEB BINARY AND LIBRARY TESTS PASSED", output)
+        self.assertNotIn("DEB TESTS PASSED", output)
+        self.assertNotIn("start-node.sh", commands)
+
+    def test_genesis_timeout_fails_after_library_checks(self):
+        code, commands, log, _, _, output = self.run_script(fail="genesis-timeout", status=124)
+        self.assertEqual(code, 124, output)
+        self.assertIn("java", commands)
+        self.assertEqual(commands.count("timeout"), 2, log)
+        self.assertIn("--signal=TERM --kill-after=30s 360s /scripts/start-node.sh", "\n".join(log))
+        self.assertIn("DEB BINARY AND LIBRARY TESTS PASSED", output)
+        self.assertIn("DEB GENESIS TESTS FAILED (status 124; limit 360 seconds)", output)
+        self.assertNotIn("DEB GENESIS TESTS PASSED", output)
+        self.assertNotIn("DEB TESTS PASSED", output)
 
     def test_apt_failures_stop_before_binary_tests(self):
         for failure, expected_apt_calls in [("apt-update", 1), ("apt-install", 2)]:

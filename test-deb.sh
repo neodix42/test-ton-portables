@@ -22,6 +22,10 @@ esac
 
 trap 'echo "DEB TESTS FAILED at line $LINENO: $BASH_COMMAND" >&2' ERR
 
+# This suite also runs in fresh containers without a preceding portable test.
+wget --timeout=30 --tries=3 -q -O /app/test-ton-libs.jar \
+  https://github.com/neodix42/test-ton-libs/releases/latest/download/test-ton-libs.jar
+
 # Use a repository-specific keyring; no keyserver or Launchpad API is needed.
 install -d -m 0755 /etc/apt/keyrings
 install -m 0644 /app/ton-foundation-ppa.asc /etc/apt/keyrings/ton-foundation-ppa.asc
@@ -52,8 +56,27 @@ ldd /usr/lib/libtonlibjson.so.0.5
 ldd /usr/lib/libemulator.so
 
 echo testing libtonlibjson and libemulator...
-java -jar /app/test-ton-libs.jar /usr/lib/libtonlibjson.so.0.5 /usr/lib/libemulator.so
+if timeout --signal=TERM --kill-after=10s 180s java -jar /app/test-ton-libs.jar /usr/lib/libtonlibjson.so.0.5 /usr/lib/libemulator.so; then
+  :
+else
+  status=$?
+  if [ "$status" -eq 124 ]; then
+    echo "DEB LIBRARY TESTS FAILED: timed out after 180 seconds" >&2
+  else
+    echo "DEB LIBRARY TESTS FAILED: status $status" >&2
+  fi
+  exit "$status"
+fi
+echo "DEB BINARY AND LIBRARY TESTS PASSED"
 
-echo testing other ton portable binaries...
-TONLIBJSON_PATH=/usr/lib/libtonlibjson.so.0.5 LIBEMULATOR_PATH=/usr/lib/libemulator.so /scripts/start-node.sh
+echo testing installed ton genesis binaries...
+if TONLIBJSON_PATH=/usr/lib/libtonlibjson.so.0.5 LIBEMULATOR_PATH=/usr/lib/libemulator.so \
+    timeout --signal=TERM --kill-after=30s 360s /scripts/start-node.sh; then
+  :
+else
+  status=$?
+  echo "DEB GENESIS TESTS FAILED (status $status; limit 360 seconds)" >&2
+  exit "$status"
+fi
+echo "DEB GENESIS TESTS PASSED"
 echo "DEB TESTS PASSED"

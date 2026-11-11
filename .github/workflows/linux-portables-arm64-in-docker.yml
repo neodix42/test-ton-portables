@@ -1,4 +1,4 @@
-name: Test linux arm64 portable binaries in docker
+name: Test linux arm64 portable binaries and DEB packages in docker
 
 on: [push,workflow_dispatch,workflow_call]
 
@@ -7,26 +7,23 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  build:
+  portables:
+    name: Portable binaries (${{ matrix.docker-file }})
+    timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
-        docker-file: [
-#                      dockerfile-ubuntu-20, # too old, we built on 22.04
-                      dockerfile-ubuntu-22, dockerfile-ubuntu-24, dockerfile-ubuntu-25,  dockerfile-ubuntu-26,
-#                      dockerfile-debian-11, # too old
-                      dockerfile-debian-12,
-#                      dockerfile-mint-20,dockerfile-mint-21, # no image arm64
-#                      dockerfile-redhat-8, # outdated
-                      dockerfile-redhat-9,
-#                      dockerfile-centos-7,dockerfile-centos-8, # outdated
-#                      dockerfile-rebornos,
-                      dockerfile-fedora,
-#                      dockerfile-arch-linux, # no image arm64
-                      dockerfile-opensuse-leap-15]
+        docker-file:
+          - dockerfile-ubuntu-22
+          - dockerfile-ubuntu-24
+          - dockerfile-ubuntu-25
+          - dockerfile-ubuntu-26
+          - dockerfile-debian-12
+          - dockerfile-redhat-9
+          - dockerfile-fedora
+          - dockerfile-opensuse-leap-15
 
     runs-on: ubuntu-22.04-arm
-
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
@@ -66,5 +63,58 @@ jobs:
       - name: Show images
         run: docker images
 
-      - name: Run
-        run: docker run --privileged --cap-add=ALL -e ARCH='arm64' ${{ matrix.docker-file }}
+      - name: Test portable binaries
+        run: docker run --rm --privileged --cap-add=ALL -e ARCH='arm64' --entrypoint /app/test-portables.sh ${{ matrix.docker-file }}
+
+  deb:
+    name: DEB packages (${{ matrix.docker-file }})
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        docker-file:
+          - dockerfile-ubuntu-22
+          - dockerfile-ubuntu-24
+
+    runs-on: ubuntu-22.04-arm
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver-opts: image=moby/buildkit:v0.11.0
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install fuse & libfuse2 on github server
+        run: |
+          sudo apt install fuse libfuse2
+
+      - name: Build
+        id: docker_build
+        uses: docker/build-push-action@v6
+        with:
+          platforms: linux/arm64
+          load: true
+          push: false
+          context: ./
+          file: ./${{ matrix.docker-file }}
+          tags: ${{ matrix.docker-file }}
+
+      - name: Show images
+        run: docker images
+
+      - name: Test deb packages
+        run: docker run --rm --privileged --cap-add=ALL -e ARCH='arm64' --entrypoint /app/test-deb.sh ${{ matrix.docker-file }}

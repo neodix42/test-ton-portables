@@ -1,4 +1,55 @@
+#!/usr/bin/env bash
 # next to this script you should have ton-private-testnet.config.json.template, example.config.json, control.template and gen-zerostate.fif
+
+PRELIMINARY_DHT_SERVER_RUN=
+PRELIMINARY_VALIDATOR_RUN=
+DHT_SERVER_RUN=
+VALIDATOR_RUN=
+TEST_WAIT_RUN=
+
+# Reap every node we start. An expected SIGTERM is different from a node crash.
+stop_background() {
+  local pid_variable=$1 label=$2
+  local node_pid=${!pid_variable}
+  local requested_stop=0 status=0 attempt
+  [ -n "$node_pid" ] || return 0
+
+  if kill -0 "$node_pid" 2>/dev/null && kill -TERM "$node_pid" 2>/dev/null; then
+    requested_stop=1
+    for ((attempt=0; attempt<100; attempt++)); do
+      kill -0 "$node_pid" 2>/dev/null || break
+      sleep 0.1
+    done
+    if kill -0 "$node_pid" 2>/dev/null; then
+      echo "$label did not stop within 10 seconds; killing it" >&2
+      kill -KILL "$node_pid" 2>/dev/null || true
+    fi
+  fi
+
+  wait "$node_pid" || status=$?
+  printf -v "$pid_variable" '%s' ''
+  if [ "$requested_stop" -eq 1 ] && { [ "$status" -eq 0 ] || [ "$status" -eq 143 ]; }; then
+    return 0
+  fi
+  echo "$label exited unexpectedly (status $status)" >&2
+  [ "$status" -ne 0 ] || status=1
+  return "$status"
+}
+
+cleanup() {
+  local status=$? cleanup_status=0 pid_variable
+  trap - EXIT
+  trap '' INT TERM
+  for pid_variable in TEST_WAIT_RUN PRELIMINARY_VALIDATOR_RUN PRELIMINARY_DHT_SERVER_RUN VALIDATOR_RUN DHT_SERVER_RUN; do
+    stop_background "$pid_variable" "$pid_variable" || cleanup_status=$?
+  done
+  [ "$status" -ne 0 ] || status=$cleanup_status
+  exit "$status"
+}
+
+trap cleanup EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
 
 INTERNAL_IP=127.0.0.1
 PUBLIC_PORT=${PUBLIC_PORT:-40001}
@@ -100,7 +151,7 @@ else
   sed -i -e "s#NODES#$(printf "%q" $DHT_NODES)#g" my-ton-global.config.json
   cp my-ton-global.config.json ..
 
-  (dht-server -C my-ton-global.config.json -D . -I "$INTERNAL_IP:$DHT_PORT")&
+  dht-server -C my-ton-global.config.json -D . -I "$INTERNAL_IP:$DHT_PORT" &
   PRELIMINARY_DHT_SERVER_RUN=$!
   sleep 1;
   echo DHT server started at $INTERNAL_IP:$DHT_PORT
@@ -134,7 +185,7 @@ else
   mv config.json.new config.json
 
   # start the full node for some time to add validation keys
-  (validator-engine -C /var/ton-work/db/my-ton-global.config.json --db /var/ton-work/db --ip "$INTERNAL_IP:$PUBLIC_PORT")&
+  validator-engine -C /var/ton-work/db/my-ton-global.config.json --db /var/ton-work/db --ip "$INTERNAL_IP:$PUBLIC_PORT" &
   PRELIMINARY_VALIDATOR_RUN=$!
   sleep 4;
 
@@ -152,7 +203,7 @@ else
   echo | validator-engine-console -k client -p server.pub -v 0 -a  "$INTERNAL_IP:$CONSOLE_PORT" -rc "addadnl $NEW_NODE_KEY 0" 2>&1
   echo | validator-engine-console -k client -p server.pub -v 0 -a  "$INTERNAL_IP:$CONSOLE_PORT" -rc "changefullnodeaddr $NEW_NODE_KEY" 2>&1
   echo | validator-engine-console -k client -p server.pub -v 0 -a "$INTERNAL_IP:$CONSOLE_PORT" -rc "importf keyring/$VAL_ID_HEX" 2>&1
-  kill $PRELIMINARY_VALIDATOR_RUN;
+  stop_background PRELIMINARY_VALIDATOR_RUN "Preliminary validator" || exit $?
 
   rm -rf /var/ton-work/log*
 
@@ -181,13 +232,14 @@ else
 
   echo Restart DHT server
   echo
-  kill $PRELIMINARY_DHT_SERVER_RUN;
+  stop_background PRELIMINARY_DHT_SERVER_RUN "Preliminary DHT server" || exit $?
   sleep 1
 fi
 
 cp global.config.json /usr/share/data/
 
 nohup dht-server -C /var/ton-work/db/global.config.json -D /var/ton-work/db/dht-server -I "$INTERNAL_IP:$DHT_PORT"&
+DHT_SERVER_RUN=$!
 echo DHT server started at $INTERNAL_IP:$DHT_PORT
 echo
 echo Lite server started at $INTERNAL_IP:$LITE_PORT
@@ -202,11 +254,17 @@ fi
 mkdir /var/ton-work/logs
 echo Started $NAME at $INTERNAL_IP:$PUBLIC_PORT
 nohup validator-engine -C /var/ton-work/db/global.config.json -v $VERBOSITY --db /var/ton-work/db -l /var/ton-work/logs/log --ip "$INTERNAL_IP:$PUBLIC_PORT" &
+VALIDATOR_RUN=$!
 
 echo Using
 which validator-engine
 validator-engine -V
 echo sleep 4m and check if 30 blocks were generated and exit
-sleep 240
+sleep 240 &
+TEST_WAIT_RUN=$!
+wait "$TEST_WAIT_RUN"
+TEST_WAIT_RUN=
+stop_background VALIDATOR_RUN "Validator" || exit $?
+stop_background DHT_SERVER_RUN "DHT server" || exit $?
 grep "seqno\":30,"  /var/ton-work/logs/log.session-stats
 exit $?

@@ -1,9 +1,10 @@
 FROM ubuntu:26.04
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y wget unzip openjdk-17-jre-headless fuse libfuse2 kmod lsb-release binutils bc gnupg gnupg2 gnupg1 software-properties-common
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y ca-certificates wget unzip openjdk-17-jre-headless fuse libfuse2 kmod lsb-release binutils bc gnupg gnupg2 gnupg1 software-properties-common
 RUN mkdir app
 COPY --chmod=744 /entry.sh /app
 COPY --chmod=744 /test-portables.sh /app
 COPY --chmod=744 /test-deb.sh /app
+COPY --chmod=644 /keys/ton-foundation-ppa.asc /app/ton-foundation-ppa.asc
 
 RUN mkdir -p /scripts/web  \
     /usr/share/data \

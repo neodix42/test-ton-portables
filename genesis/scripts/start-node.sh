@@ -5,8 +5,8 @@ echo GENESIS=$GENESIS
 
 if [ "$GENESIS" = "true" ]; then
   echo starting genesis...
-  cp /usr/local/bin/libtonlibjson.so /usr/share/data
-  cp /usr/local/bin/libemulator.so /usr/share/data
+  cp "${TONLIBJSON_PATH:-/usr/local/bin/libtonlibjson.so}" /usr/share/data/libtonlibjson.so || exit $?
+  cp "${LIBEMULATOR_PATH:-/usr/local/bin/libemulator.so}" /usr/share/data/libemulator.so || exit $?
   /scripts/start-genesis.sh
 else
   echo starting validator...

@@ -1,0 +1,21 @@
+name: Test shell harness
+
+on: [push, workflow_dispatch, workflow_call]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: Check Bash syntax
+        run: |
+          for script in entry.sh test-deb.sh genesis/scripts/start-node.sh genesis/scripts/start-genesis.sh; do
+            bash -n "$script"
+          done
+      - name: Pull isolated test image
+        run: docker pull ubuntu:24.04
+      - name: Test repository setup and node lifecycle
+        run: PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -v
